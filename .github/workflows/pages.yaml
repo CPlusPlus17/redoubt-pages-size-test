@@ -1,0 +1,17 @@
+name: pages-size-test
+on: [workflow_dispatch, push]
+permissions: { contents: read, pages: write, id-token: write }
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: { name: github-pages }
+    steps:
+      - run: |
+          mkdir -p public/fdroid/repo
+          head -c 134217728 /dev/urandom > public/fdroid/repo/big-128mib.apk
+          sha256sum public/fdroid/repo/big-128mib.apk | tee public/fdroid/repo/SHA256SUMS
+          echo ok > public/index.html
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: public }
+      - uses: actions/deploy-pages@v4
